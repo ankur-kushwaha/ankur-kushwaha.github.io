@@ -119,7 +119,7 @@ export default class App extends React.Component {
         return (
             <div>
                 <GithubCorner
-                    href="https://github.com/IonicaBizau/react-todo-app"
+                    href="https://github.com/ankur-kushwaha/ankur-kushwaha.github.io"
                     bannerColor="#64CEAA"
                     octoColor="#fff"
                     width={80}
