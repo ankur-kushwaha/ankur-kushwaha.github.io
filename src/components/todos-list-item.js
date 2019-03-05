@@ -20,8 +20,8 @@ export default class TodosListItem extends React.Component {
         }
         return (
             <td>
-                <button onClick={this.setEditState.bind(this, true)}>Edit</button>
-                <button className="delete-btn" onClick={this.deleteTask.bind(this)}>Delete</button>
+                <span><button onClick={this.setEditState.bind(this, true)}>Edit</button>
+                <button className="delete-btn" onClick={this.deleteTask.bind(this)}>Delete</button></span>
             </td>
         );
     }
@@ -64,11 +64,11 @@ export default class TodosListItem extends React.Component {
     }
 
     toggleTask () {
-        this.props.toggleTask(this.props.id);
+        this.props.toggleTask(this.props.id,this.props.isCompleted);
     }
 
     editTask (e) {
-        this.props.editTask(this.props.id, this.refs.task.value);
+        this.props.editTask(this.props.id, this.refs.task.value,this.props.isCompleted);
         this.setState({
             isEditing: false
         });
@@ -76,6 +76,6 @@ export default class TodosListItem extends React.Component {
     }
 
     deleteTask () {
-        this.props.deleteTask(this.props.id);
+        this.props.deleteTask(this.props.id,this.props.isCompleted);
     }
 }

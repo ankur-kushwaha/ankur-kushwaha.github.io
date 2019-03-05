@@ -3,8 +3,9 @@ import TodosListHeader from "./todos-list-header";
 import TodosListItem from "./todos-list-item";
 
 export default class TodosList extends React.Component {
-    renderItems () {
-        return this.props.todos.map((c, index) => {
+
+    renderTodos(todos){
+        return todos.map((c, index) => {
             return (
                 <TodosListItem
                     key={index}
@@ -17,17 +18,51 @@ export default class TodosList extends React.Component {
             )
         });
     }
+
+    renderItems (todos) {
+        return this.renderTodos(todos)        
+    }
+
+    renderCompletedItems(completedTodos){
+
+        let output = completedTodos.reduce(function(a,b){
+            if(a[new Date(b.completedDate).toDateString()]){
+            a[new Date(b.completedDate).toDateString()].push(b);
+            }else{
+                a[new Date(b.completedDate).toDateString()]=[b];
+            }
+            return a;
+        },{}) 
+
+        console.log(output)
+        return Object.keys(output).map((dateString,i)=>{
+            return ( <table>
+                 <caption>{dateString}</caption>
+                <tbody>
+                    {this.renderItems(output[dateString])}
+                </tbody>
+            </table>)
+        })
+
+       
+    }
     render () {
-        if (!this.props.todos.length) {
+        if (!this.props.todos.length && !this.props.completedTodos.length) {
             return <p className="tutorial">Create your first todo! :)</p>;
         }
         return (
+            <div>
             <table>
                 {/* <TodosListHeader /> */}
                 <tbody>
-                    {this.renderItems()}
+                    {this.renderItems(this.props.todos)}
                 </tbody>
             </table>
+           
+
+            {this.renderCompletedItems(this.props.completedTodos)}
+           
+            </div>
         )
     }
 }
