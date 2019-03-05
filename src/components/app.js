@@ -3,38 +3,45 @@ import TodosList from "./todos-list"
 import CreateTodo from "./create-todo";
 import css from "./style.css";
 import GithubCorner from "react-github-corner";
+import { timingSafeEqual } from "crypto";
+
+var db = firebase.firestore();
 
 const todos = {
     items: [],
     lsKey: "todos",
     lsCompletedKey : "todosCompleted",
-    populate () {
-        this.items = this.get();
-        this.completedItems = this.getCompletedItems();
-    },
+
     get () {
-        try {
-            return JSON.parse(localStorage.getItem(this.lsKey)) || []
-        } catch (e) {}
-        return [];
+
+        return db.collection("todosApp").doc(this.lsKey).get().then(function(doc) {
+            if (doc.exists) {
+                console.log("Document data:", doc.data());
+                return doc.data().items;
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+            }
+        })
     },
     getCompletedItems(){
-        try {
-            return JSON.parse(localStorage.getItem(this.lsCompletedKey)) || []
-        } catch (e) {}
-        return [];
+        return db.collection("todosApp").doc(this.lsCompletedKey).get().then(function(doc) {
+            if (doc.exists) {
+                console.log("Document data:", doc.data());
+                return doc.data().items;
+            } else {
+                console.log("No such document!");
+            }
+        })
     },
     save () {
-        localStorage.setItem(this.lsKey, JSON.stringify(this.items));
+        db.collection("todosApp").doc(this.lsKey).set({items:this.items});
     },
     saveCompletedItems (){
-        localStorage.setItem(this.lsCompletedKey, JSON.stringify(this.completedItems));
+        db.collection("todosApp").doc(this.lsCompletedKey).set({items:this.completedItems});
     },
     toggle (id,isCompleted) {
-        
-        
-
-        if(isCompleted){
+          if(isCompleted){
             let todoItem = this.completedItems[id];
             todoItem.isCompleted = false;
             todoItem.completedDate = null;
@@ -59,10 +66,11 @@ const todos = {
     remove (id , isCompleted) {
         if(isCompleted){
             this.completedItems.splice(id, 1);
+            this.saveCompletedItems();
         }else{
             this.items.splice(id, 1);
+            this.save();
         }
-        this.save();
     },
     update (id, task,isCompleted) {
         if(isCompleted){
@@ -78,27 +86,36 @@ const todos = {
     }
 };
 
-todos.populate();
-
-
 export default class App extends React.Component {
     constructor (props) {
         super(props);
-        //setInterval(() => {
-        //    todos.push({
-        //        task: "Make tea: " + Math.random(),
-        //        isCompleted: true
-        //    });
-        //    this.setState({ todos });
-        //}, 1000);
+       
+        this.state={}
+      
+        db.collection("todosApp").doc(todos.lsKey)
+            .onSnapshot((doc) =>{
+                console.log("Current data: ", doc.data());
+                let items = doc.data().items
+                todos.items  = items;
+                this.setState({
+                    todos:items
+                })
+            });
 
-
-        this.state = {
-            todos: todos.items,
-            completedTodos : todos.completedItems
-        };
+            db.collection("todosApp").doc(todos.lsCompletedKey)
+            .onSnapshot((doc) =>{
+                console.log("Current data: ", doc.data());
+                let items = doc.data().items
+                todos.completedItems  = items;
+                this.setState({
+                    completedTodos:items
+                })
+            });
     }
     render () {
+        if(!this.state.todos || !this.state.completedTodos){
+            return null;
+        }
         return (
             <div>
                 <GithubCorner

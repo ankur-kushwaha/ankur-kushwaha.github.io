@@ -36,7 +36,7 @@ export default class TodosList extends React.Component {
 
         console.log(output)
         return Object.keys(output).map((dateString,i)=>{
-            return ( <table>
+            return ( <table key={i}>
                  <caption>{dateString}</caption>
                 <tbody>
                     {this.renderItems(output[dateString])}
