@@ -60,7 +60,7 @@ const todos = {
         this.saveCompletedItems();
     },
     add (obj) {
-        this.items.push(obj);
+        this.items.unshift(obj);
         this.save();
     },
     remove (id , isCompleted) {
