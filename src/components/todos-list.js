@@ -25,7 +25,9 @@ export default class TodosList extends React.Component {
 
     renderCompletedItems(completedTodos){
 
-        let output = completedTodos.reduce(function(a,b){
+        let output = completedTodos
+        .sort((a,b)=>b.completedDate-a.completedDate)
+        .reduce(function(a,b){
             if(a[new Date(b.completedDate).toDateString()]){
             a[new Date(b.completedDate).toDateString()].push(b);
             }else{
@@ -34,7 +36,6 @@ export default class TodosList extends React.Component {
             return a;
         },{}) 
 
-        console.log(output)
         return Object.keys(output).map((dateString,i)=>{
             return ( <table key={i}>
                  <caption>{dateString}</caption>
