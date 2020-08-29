@@ -1,17 +1,24 @@
-import React from "react";
+/* eslint-disable react/prop-types */
+import React from 'react'
 
-export default class CreateTodo extends React.Component {
-    render () {
-        return (
-            <form onSubmit={this.onSubmit.bind(this)} className="create-todo-form">
-                <input type="text" placeholder="Task" ref="taskMessage" autoFocus/>
-                <button>Add</button>
-            </form>
-        );
+export default function CreateTodo ({createTask}) {
+  let [text,setText] = React.useState("");
+
+  function onSubmit (e) {
+    e.preventDefault()
+    createTask(text)
+    setText("")
+  }
+
+  function handleKeyDown (e) {
+    if (e.which == 13) {
+      onSubmit(e)
     }
-    onSubmit (e) {
-        this.props.createTask(this.refs.taskMessage.value);
-        this.refs.taskMessage.value = "";
-        e.preventDefault();
-    }
+  }
+ 
+  return (
+    <div className="create-todo-form">
+      <input value={text} onKeyDown={handleKeyDown} onChange={e=>setText(e.target.value)} type="text" placeholder="What needs to done" autoFocus/>
+    </div>
+  )
 }
